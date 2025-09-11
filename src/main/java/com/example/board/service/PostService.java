@@ -1,14 +1,13 @@
 package com.example.board.service;
 
+import com.example.board.exception.post.PostNotFountException;
 import com.example.board.model.Post;
 import com.example.board.model.PostPatchRequestBody;
 import com.example.board.model.PostRequestBody;
 import com.example.board.model.entity.PostEntity;
 import com.example.board.repository.PostEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -29,7 +28,7 @@ public class PostService {
 
         var postEntity = postEntityRepository
                 .findById(postId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "post not found"));
+                .orElseThrow(() -> new PostNotFountException(postId));
 
         return Post.from(postEntity);
     }
@@ -47,7 +46,7 @@ public class PostService {
 
         var postEntity = postEntityRepository
                 .findById(postId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "post not found"));
+                .orElseThrow(() -> new PostNotFountException(postId));
 
         postEntity.setBody(body.body());
         var updatedPostEntity = postEntityRepository.save(postEntity);
@@ -59,8 +58,7 @@ public class PostService {
 
         var postEntity = postEntityRepository
                 .findById(postId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "post not found"));
-
+                .orElseThrow(() -> new PostNotFountException(postId));
         postEntityRepository.delete(postEntity);
     }
 }

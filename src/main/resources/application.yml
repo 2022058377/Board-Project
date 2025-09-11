@@ -19,3 +19,7 @@ spring:
     user:
       name: board-admin
       password: board-admin-password
+
+logging:
+  level:
+    root: info
