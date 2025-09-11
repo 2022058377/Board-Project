@@ -9,10 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/vi/posts")
+@RequestMapping("/api/v1/posts")
 public class PostController {
 
     @Autowired private PostService postService;
@@ -27,9 +26,8 @@ public class PostController {
     public ResponseEntity<Post> getPostByPostId(
             @PathVariable Long postId
     ) {
-        Optional<Post> post = postService.getPostByPostId(postId);
-        return post.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        var post = postService.getPostByPostId(postId);
+        return ResponseEntity.ok(post);
     }
 
     @PostMapping

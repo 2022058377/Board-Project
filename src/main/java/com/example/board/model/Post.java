@@ -1,19 +1,26 @@
 package com.example.board.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.example.board.model.entity.PostEntity;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.ZonedDateTime;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-public class Post {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public record Post(
+        Long postId,
+        String body,
+        ZonedDateTime createdAt,
+        ZonedDateTime updatedAt,
+        ZonedDateTime deletedAt
+) {
 
-    private Long postId;
-    private String body;
-    private ZonedDateTime createdAt;
+    public static Post from(PostEntity entity) {
+        return new Post(
+                entity.getPostId(),
+                entity.getBody(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
+                entity.getDeletedAt()
+        );
+    }
 }

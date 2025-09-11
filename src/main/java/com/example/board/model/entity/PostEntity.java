@@ -1,0 +1,45 @@
+package com.example.board.model.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import java.time.ZonedDateTime;
+
+@Entity
+@Table(name = "post")
+@SQLDelete(sql = "UPDATE \"post\" SET deletedAt = CURRENT_TIMESTAMP WHERE postid = ?")
+@SQLRestriction("deletedAt IS NULL")
+@Getter
+@Setter
+public class PostEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long postId;
+
+    @Column(columnDefinition = "TEXT")
+    private String body;
+
+    @Column
+    private ZonedDateTime createdAt;
+
+    @Column
+    private ZonedDateTime updatedAt;
+
+    @Column
+    private ZonedDateTime deletedAt;
+
+    @PrePersist
+    private void prePersist() {
+        this.createdAt = ZonedDateTime.now();
+        this.updatedAt = this.createdAt;
+    }
+
+    @PreUpdate
+    private void preUpdate() {
+        this.updatedAt = ZonedDateTime.now();
+    }
+}
