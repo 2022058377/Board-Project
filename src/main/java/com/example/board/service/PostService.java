@@ -19,8 +19,8 @@ public class PostService {
     public List<Post> getPosts() {
 
         var postEntities = postEntityRepository.findAll();
-        return postEntities.stream().
-                map(Post::from)
+        return postEntities.stream()
+                .map(Post::from)
                 .toList();
     }
 
