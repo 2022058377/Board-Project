@@ -10,7 +10,7 @@ public class PostNotFountException extends ClientErrorException {
     }
 
     public PostNotFountException(Long postId) {
-        super(HttpStatus.NOT_FOUND, "Post wiht postId : " +  postId + " not fount");
+        super(HttpStatus.NOT_FOUND, "Post with postId : " +  postId + " not fount");
     }
 
     public PostNotFountException(String message) {
