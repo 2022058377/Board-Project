@@ -9,7 +9,10 @@ import org.hibernate.annotations.SQLRestriction;
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(name = "post")
+@Table(
+        name = "post",
+        indexes = {@Index(name = "post_userid_idx", columnList = "userid")}
+)
 @SQLDelete(sql = "UPDATE \"post\" SET deletedAt = CURRENT_TIMESTAMP WHERE postid = ?")
 @SQLRestriction("deletedAt IS NULL")
 @Getter
@@ -31,6 +34,18 @@ public class PostEntity {
 
     @Column
     private ZonedDateTime deletedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "userid")
+    private UserEntity user;
+
+    public static PostEntity of(String body, UserEntity user) {
+        var postEntity = new PostEntity();
+        postEntity.setBody(body);
+        postEntity.setUser(user);
+
+        return postEntity;
+    }
 
     @PrePersist
     private void prePersist() {

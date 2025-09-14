@@ -1,6 +1,7 @@
 package com.example.board.model.entity;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
@@ -13,11 +14,15 @@ import java.util.Collection;
 import java.util.Random;
 
 @Entity
-@Table(name = "\"user\"")
+@Table(
+        name = "\"user\"",
+        indexes = {@Index(name = "user_username_idx", columnList = "username", unique = true)}
+)
 @SQLDelete(sql = "UPDATE \"user\" SET deletedAt = CURRENT_TIMESTAMP WHERE userid = ?")
 @SQLRestriction("deletedAt IS NULL")
 @Getter
 @Setter
+@EqualsAndHashCode
 public class UserEntity implements UserDetails {
 
     @Id
