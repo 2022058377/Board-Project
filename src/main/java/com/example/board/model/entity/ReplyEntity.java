@@ -10,24 +10,22 @@ import java.time.ZonedDateTime;
 
 @Entity
 @Table(
-        name = "post",
-        indexes = {@Index(name = "post_userid_idx", columnList = "userid")}
+        name = "reply",
+        indexes = {@Index(name = "reply_userid_idx", columnList = "userid"),
+                @Index(name = "reply_postid_idx", columnList = "postid")}
 )
-@SQLDelete(sql = "UPDATE \"post\" SET deletedAt = CURRENT_TIMESTAMP WHERE postid = ?")
+@SQLDelete(sql = "UPDATE \"reply\" SET deletedAt = CURRENT_TIMESTAMP WHERE replyid = ?")
 @SQLRestriction("deletedAt IS NULL")
 @Getter
 @Setter
-public class PostEntity {
+public class ReplyEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postId;
+    private Long replyId;
 
     @Column(columnDefinition = "TEXT")
     private String body;
-
-    @Column
-    private Long repliesCount;
 
     @Column
     private ZonedDateTime createdAt;
@@ -42,12 +40,17 @@ public class PostEntity {
     @JoinColumn(name = "userid")
     private UserEntity user;
 
-    public static PostEntity of(String body, UserEntity user) {
-        var postEntity = new PostEntity();
-        postEntity.setBody(body);
-        postEntity.setUser(user);
+    @ManyToOne
+    @JoinColumn(name = "postid")
+    private PostEntity post;
 
-        return postEntity;
+    public static ReplyEntity of(String body, UserEntity user,  PostEntity post) {
+        var replyEntity = new ReplyEntity();
+        replyEntity.setBody(body);
+        replyEntity.setUser(user);
+        replyEntity.setPost(post);
+
+        return replyEntity;
     }
 
     @PrePersist

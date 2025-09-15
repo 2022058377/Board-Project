@@ -6,15 +6,15 @@ import org.springframework.http.HttpStatus;
 public class PostNotFountException extends ClientErrorException {
 
     public PostNotFountException() {
-        super(HttpStatus.NOT_FOUND, "Post not fount");
+        super(HttpStatus.NOT_FOUND, "Post not found");
     }
 
     public PostNotFountException(Long postId) {
-        super(HttpStatus.NOT_FOUND, "Post with postId : " +  postId + " not fount");
+        super(HttpStatus.NOT_FOUND, "Post with postId : " +  postId + " not found");
     }
 
     public PostNotFountException(String message) {
-        super(HttpStatus.BAD_REQUEST, message);
+        super(HttpStatus.NOT_FOUND, message);
     }
 
 }
