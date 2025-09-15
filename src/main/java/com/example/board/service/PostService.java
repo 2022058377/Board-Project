@@ -3,13 +3,16 @@ package com.example.board.service;
 import com.example.board.exception.post.PostNotFountException;
 import com.example.board.exception.user.UserNotAllowedException;
 import com.example.board.exception.user.UserNotFoundException;
+import com.example.board.model.entity.LikeEntity;
 import com.example.board.model.entity.UserEntity;
 import com.example.board.model.post.Post;
 import com.example.board.model.post.PostPatchRequestBody;
 import com.example.board.model.post.PostRequestBody;
 import com.example.board.model.entity.PostEntity;
+import com.example.board.repository.LikeEntityRepository;
 import com.example.board.repository.PostEntityRepository;
 import com.example.board.repository.UserEntityRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,8 @@ public class PostService {
     @Autowired private PostEntityRepository postEntityRepository;
 
     @Autowired private UserEntityRepository userEntityRepository;
+
+    @Autowired private LikeEntityRepository likeEntityRepository;
 
     public List<Post> getPosts() {
 
@@ -66,8 +71,7 @@ public class PostService {
 
     public void deletePost(Long postId, UserEntity user) {
 
-        var postEntity = postEntityRepository
-                .findById(postId)
+        var postEntity = postEntityRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFountException(postId));
 
         if(!postEntity.getUser().equals(user)) {
@@ -87,5 +91,26 @@ public class PostService {
         return posts.stream()
                 .map(Post::from)
                 .toList();
+    }
+
+    @Transactional
+    public Post toggleLike(Long postId, UserEntity user) {
+
+        var postEntity = postEntityRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFountException(postId));
+
+        var likeEntity = likeEntityRepository.findByUserAndPost(user, postEntity);
+
+        if(likeEntity.isPresent()) {
+
+            likeEntityRepository.delete(likeEntity.get());
+            postEntity.setLikesCount(Math.max(0, postEntity.getLikesCount() - 1));
+        } else {
+
+            likeEntityRepository.save(LikeEntity.of(user, postEntity));
+            postEntity.setLikesCount(postEntity.getLikesCount() + 1);
+        }
+
+        return Post.from(postEntityRepository.save(postEntity));
     }
 }
