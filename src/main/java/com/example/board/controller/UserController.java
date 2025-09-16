@@ -6,6 +6,7 @@ import com.example.board.model.user.*;
 import com.example.board.service.PostService;
 import com.example.board.service.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -13,12 +14,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
     @Autowired
     private PostService postService;
 
@@ -63,15 +65,54 @@ public class UserController {
         return ResponseEntity.ok(posts);
     }
 
+    @PostMapping("/{username}/follows")
+    public ResponseEntity<User> follower(
+            @PathVariable String username,
+            Authentication authentication
+    ) {
+
+        var user = userService.follower(username, (UserEntity) authentication.getPrincipal());
+        return ResponseEntity.ok(user);
+    }
+
+    @DeleteMapping("/{username}/follows")
+    public ResponseEntity<User> unFollower(
+            @PathVariable String username,
+            Authentication authentication
+    ) {
+
+        var user = userService.unFollower(username, (UserEntity) authentication.getPrincipal());
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/{username}/followers")
+    public ResponseEntity<List<User>> getFollowersByUser(
+            @PathVariable String username
+    ) {
+
+        var followers = userService.getFollowersByUsername(username);
+        return ResponseEntity.ok(followers);
+    }
+
+    @GetMapping("/{username}/followings")
+    public ResponseEntity<List<User>> getFollowingsByUser(
+            @PathVariable String username
+    ) {
+
+        var followings = userService.getFollowingsByUsername(username);
+        return ResponseEntity.ok(followings);
+    }
+
     @PostMapping
-    public ResponseEntity<User> signUp(
+    public ResponseEntity<User> signup(
             @Valid @RequestBody UserSignUpRequestBody requestBody
     ) {
 
-        var user = userService.singUp(
+        var user = userService.signUp(
                 requestBody.username(),
                 requestBody.password()
         );
+
         return ResponseEntity.ok(user);
     }
 
@@ -84,6 +125,7 @@ public class UserController {
                 requestBody.username(),
                 requestBody.password()
         );
+
         return ResponseEntity.ok(response);
     }
 }

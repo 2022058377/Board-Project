@@ -1,4 +1,4 @@
 package com.example.board.model.user;
 
-public record UserAuthenticationResponse(String access_token) {
+public record UserAuthenticationResponse(String accessToken) {
 }

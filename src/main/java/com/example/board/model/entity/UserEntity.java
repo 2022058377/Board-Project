@@ -42,6 +42,12 @@ public class UserEntity implements UserDetails {
     private String description;
 
     @Column
+    private Long followersCount = 0L;
+
+    @Column
+    private Long followingsCount = 0L;
+
+    @Column
     private ZonedDateTime createdAt;
 
     @Column
@@ -55,7 +61,7 @@ public class UserEntity implements UserDetails {
         entity.username = username;
         entity.password = password;
 
-        entity.setProfile("https://avatar.iran.liara.run/public/"  + (new Random().nextInt(100 + 1)));
+        entity.setProfile("https://avatar.iran.liara.run/public/"  + (new Random().nextInt(100) + 1));
 
         return entity;
     }

@@ -26,7 +26,7 @@ public class WebConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://127.0.0.1:3000"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/v1/**", configuration);
@@ -38,7 +38,7 @@ public class WebConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(Customizer.withDefaults())
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.POST, "api/v1/users", "api/v1/users/authenticate").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/*/users", "/api/*/users/authenticate").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(
                         (session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

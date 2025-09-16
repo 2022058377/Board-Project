@@ -27,10 +27,10 @@ public class PostEntity {
     private String body;
 
     @Column
-    private Long repliesCount;
+    private Long repliesCount = 0L;
 
     @Column
-    private Long likesCount;
+    private Long likesCount = 0L;
 
     @Column
     private ZonedDateTime createdAt;
