@@ -4,11 +4,11 @@ import com.example.board.exception.post.PostNotFountException;
 import com.example.board.exception.user.UserNotAllowedException;
 import com.example.board.exception.user.UserNotFoundException;
 import com.example.board.model.entity.LikeEntity;
+import com.example.board.model.entity.PostEntity;
 import com.example.board.model.entity.UserEntity;
 import com.example.board.model.post.Post;
 import com.example.board.model.post.PostPatchRequestBody;
 import com.example.board.model.post.PostRequestBody;
-import com.example.board.model.entity.PostEntity;
 import com.example.board.repository.LikeEntityRepository;
 import com.example.board.repository.PostEntityRepository;
 import com.example.board.repository.UserEntityRepository;
@@ -27,21 +27,28 @@ public class PostService {
 
     @Autowired private LikeEntityRepository likeEntityRepository;
 
-    public List<Post> getPosts() {
+    public List<Post> getPosts(UserEntity user) {
 
         var postEntities = postEntityRepository.findAll();
         return postEntities.stream()
-                .map(Post::from)
+                .map(postEntity -> getPostWithLikingStatus(postEntity, user))
                 .toList();
     }
 
-    public Post getPostByPostId(Long postId) {
+    public Post getPostByPostId(Long postId, UserEntity user) {
 
         var postEntity = postEntityRepository
                 .findById(postId)
                 .orElseThrow(() -> new PostNotFountException(postId));
 
-        return Post.from(postEntity);
+        return getPostWithLikingStatus(postEntity, user);
+    }
+
+    private Post getPostWithLikingStatus(PostEntity postEntity, UserEntity currentUser) {
+
+        var isLiking = likeEntityRepository.findByUserAndPost(currentUser, postEntity).isPresent();
+
+        return Post.from(postEntity, isLiking);
     }
 
     public Post createPost(PostRequestBody body, UserEntity user) {
@@ -81,7 +88,7 @@ public class PostService {
         postEntityRepository.delete(postEntity);
     }
 
-    public List<Post> getPostsByUsername(String username) {
+    public List<Post> getPostsByUsername(String username, UserEntity user) {
 
         var userEntity = userEntityRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
@@ -89,7 +96,7 @@ public class PostService {
         var posts = postEntityRepository.findByUser(userEntity);
 
         return posts.stream()
-                .map(Post::from)
+                .map(postEntity -> getPostWithLikingStatus(postEntity, user))
                 .toList();
     }
 
@@ -105,12 +112,12 @@ public class PostService {
 
             likeEntityRepository.delete(likeEntity.get());
             postEntity.setLikesCount(Math.max(0, postEntity.getLikesCount() - 1));
+            return Post.from(postEntityRepository.save(postEntity), false);
         } else {
 
             likeEntityRepository.save(LikeEntity.of(user, postEntity));
             postEntity.setLikesCount(postEntity.getLikesCount() + 1);
+            return Post.from(postEntityRepository.save(postEntity), true);
         }
-
-        return Post.from(postEntityRepository.save(postEntity));
     }
 }

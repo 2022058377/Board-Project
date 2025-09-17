@@ -26,20 +26,22 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<User>> getUsers(
-        @RequestParam(required = false) String query
+        @RequestParam(required = false) String query,
+        Authentication authentication
     ) {
 
-        var users = userService.getUsers(query);
+        var users = userService.getUsers(query, (UserEntity) authentication.getPrincipal());
 
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{username}")
     public ResponseEntity<User> getUser(
-            @PathVariable String username
+            @PathVariable String username,
+            Authentication authentication
     ) {
 
-        var user = userService.getUser(username);
+        var user = userService.getUser(username, (UserEntity) authentication.getPrincipal());
 
         return ResponseEntity.ok(user);
     }
@@ -58,9 +60,10 @@ public class UserController {
 
     @GetMapping("/{username}/posts")
     public ResponseEntity<List<Post>> getPostsByUsername(
-            @PathVariable String username
+            @PathVariable String username,
+            Authentication authentication
     ) {
-        var posts = postService.getPostsByUsername(username);
+        var posts = postService.getPostsByUsername(username, (UserEntity) authentication.getPrincipal());
 
         return ResponseEntity.ok(posts);
     }
@@ -87,22 +90,25 @@ public class UserController {
 
     @GetMapping("/{username}/followers")
     public ResponseEntity<List<User>> getFollowersByUser(
-            @PathVariable String username
+            @PathVariable String username,
+            Authentication authentication
     ) {
 
-        var followers = userService.getFollowersByUsername(username);
+        var followers = userService.getFollowersByUsername(username, (UserEntity) authentication.getPrincipal());
         return ResponseEntity.ok(followers);
     }
 
     @GetMapping("/{username}/followings")
     public ResponseEntity<List<User>> getFollowingsByUser(
-            @PathVariable String username
+            @PathVariable String username,
+            Authentication authentication
     ) {
 
-        var followings = userService.getFollowingsByUsername(username);
+        var followings = userService.getFollowingsByUsername(username, (UserEntity) authentication.getPrincipal());
         return ResponseEntity.ok(followings);
     }
 
+    // 회원가입
     @PostMapping
     public ResponseEntity<User> signup(
             @Valid @RequestBody UserSignUpRequestBody requestBody
@@ -116,6 +122,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    // 로그인
     @PostMapping("/authenticate")
     public ResponseEntity<UserAuthenticationResponse> authenticate(
             @Valid @RequestBody UserLoginRequestBody requestBody

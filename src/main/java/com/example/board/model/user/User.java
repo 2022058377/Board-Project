@@ -12,7 +12,8 @@ public record User(
         Long followersCount,
         Long followingsCount,
         ZonedDateTime createdAt,
-        ZonedDateTime updatedAt
+        ZonedDateTime updatedAt,
+        Boolean isFollowing
 ) {
 
     public static User from(UserEntity userEntity) {
@@ -24,7 +25,22 @@ public record User(
                 userEntity.getFollowersCount(),
                 userEntity.getFollowingsCount(),
                 userEntity.getCreatedAt(),
-                userEntity.getUpdatedAt()
+                userEntity.getUpdatedAt(),
+                null
+        );
+    }
+
+    public static User from(UserEntity userEntity, Boolean isFollowing) {
+        return new User(
+                userEntity.getUserId(),
+                userEntity.getUsername(),
+                userEntity.getProfile(),
+                userEntity.getDescription(),
+                userEntity.getFollowersCount(),
+                userEntity.getFollowingsCount(),
+                userEntity.getCreatedAt(),
+                userEntity.getUpdatedAt(),
+                isFollowing
         );
     }
 }

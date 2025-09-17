@@ -23,18 +23,19 @@ public class PostController {
     @Autowired private PostService postService;
 
     @GetMapping
-    public ResponseEntity<List<Post>> getPosts() {
+    public ResponseEntity<List<Post>> getPosts(Authentication authentication) {
         log.info("GET /api/v1/posts");
-        return ResponseEntity.ok(postService.getPosts());
+        return ResponseEntity.ok(postService.getPosts((UserEntity) authentication.getPrincipal()));
     }
 
     @GetMapping("/{postId}")
     public ResponseEntity<Post> getPostByPostId(
-            @PathVariable Long postId
+            @PathVariable Long postId,
+            Authentication authentication
     ) {
 
         log.info("GET /api/v1/posts/{}", postId);
-        var post = postService.getPostByPostId(postId);
+        var post = postService.getPostByPostId(postId, (UserEntity) authentication.getPrincipal());
         return ResponseEntity.ok(post);
     }
 
