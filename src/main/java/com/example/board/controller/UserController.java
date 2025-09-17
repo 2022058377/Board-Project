@@ -2,8 +2,10 @@ package com.example.board.controller;
 
 import com.example.board.model.entity.UserEntity;
 import com.example.board.model.post.Post;
+import com.example.board.model.reply.Reply;
 import com.example.board.model.user.*;
 import com.example.board.service.PostService;
+import com.example.board.service.ReplyService;
 import com.example.board.service.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private PostService postService;
+    @Autowired
+    private ReplyService replyService;
 
     @GetMapping
     public ResponseEntity<List<User>> getUsers(
@@ -89,7 +93,7 @@ public class UserController {
     }
 
     @GetMapping("/{username}/followers")
-    public ResponseEntity<List<User>> getFollowersByUser(
+    public ResponseEntity<List<Follower>> getFollowersByUser(
             @PathVariable String username,
             Authentication authentication
     ) {
@@ -106,6 +110,26 @@ public class UserController {
 
         var followings = userService.getFollowingsByUsername(username, (UserEntity) authentication.getPrincipal());
         return ResponseEntity.ok(followings);
+    }
+
+    @GetMapping("/{username}/liked-users")
+    public ResponseEntity<List<LikedUser>> getLikedUsersByUser(
+            @PathVariable String username,
+            Authentication authentication
+    ) {
+
+        var likedUsers = userService.getLikedUsersByUser(username, (UserEntity) authentication.getPrincipal());
+        return ResponseEntity.ok(likedUsers);
+    }
+
+    @GetMapping("/{username}/replies")
+    public ResponseEntity<List<Reply>> getRepliesByUser(
+            @PathVariable String username
+    ) {
+
+        var replies = replyService.getRepliesByUser(username);
+
+        return ResponseEntity.ok(replies);
     }
 
     // 회원가입
